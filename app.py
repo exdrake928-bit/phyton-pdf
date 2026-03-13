@@ -7,13 +7,11 @@ app = Flask(__name__)
 
 @app.route('/convert', methods=['POST'])
 def convert():
-    data = request.json
-    images = data.get('images', [])
+    files = request.files.getlist('images')
     
     image_bytes_list = []
-    for img_b64 in images:
-        img_bytes = base64.b64decode(img_b64)
-        img = Image.open(io.BytesIO(img_bytes)).convert('RGB')
+    for file in files:
+        img = Image.open(file.stream).convert('RGB')
         buf = io.BytesIO()
         img.save(buf, format='JPEG', quality=90)
         image_bytes_list.append(buf.getvalue())
