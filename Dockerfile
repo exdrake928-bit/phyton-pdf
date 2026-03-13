@@ -1,30 +1,9 @@
-FROM python:3.11-slim
+FROM nikolaik/python-nodejs:python3.11-nodejs20
 
-WORKDIR /app
+RUN pip install img2pdf Pillow
 
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN npm install -g n8n
 
-COPY app.py .
+EXPOSE 5678
 
-EXPOSE 5000
-
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
-```
-
----
-
-## Deploy su Railway
-
-1. Crea una **nuova cartella** nel repo GitHub chiamata `pdf-converter`
-2. Aggiungi i 3 file sopra
-3. Su Railway → **New Service** → **GitHub Repo** → seleziona la cartella `pdf-converter`
-4. Railway assegnerà un URL tipo `pdf-converter.up.railway.app`
-
----
-
-## Nodo n8n
-
-Poi in n8n sostituisci iLovePDF con un **HTTP Request** verso:
-```
-POST https://pdf-converter.up.railway.app/convert
+CMD ["n8n", "start"]
