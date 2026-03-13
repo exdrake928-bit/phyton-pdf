@@ -1,30 +1,29 @@
-from flask import Flask, request, jsonify
-import img2pdf
-from PIL import Image
-import io, base64, os
+import base64
+import io
+from flask import Flask, request, send_file
+from PyPDF2 import PdfMerger
 
 app = Flask(__name__)
 
-@app.route('/convert', methods=['POST'])
-def convert():
-    files = request.files.getlist('images')
+@app.route('/merge', methods=['POST'])
+def merge_pdfs():
+    # Riceve un JSON con una lista di stringhe base64
+    data = request.get_json()
+    pdf_strings = data.get('files', [])
     
-    image_bytes_list = []
-    for file in files:
-        img = Image.open(file.stream).convert('RGB')
-        buf = io.BytesIO()
-        img.save(buf, format='JPEG', quality=90)
-        image_bytes_list.append(buf.getvalue())
+    merger = PdfMerger()
     
-    pdf_bytes = img2pdf.convert(image_bytes_list)
-    pdf_b64 = base64.b64encode(pdf_bytes).decode('utf-8')
+    for b64_string in pdf_strings:
+        # Decodifica la stringa e la trasforma in un file "virtuale"
+        pdf_bytes = base64.b64decode(b64_string)
+        merger.append(io.BytesIO(pdf_bytes))
     
-    return jsonify({'pdf': pdf_b64, 'pages': len(image_bytes_list)})
-
-@app.route('/health', methods=['GET'])
-def health():
-    return jsonify({'status': 'ok'})
+    output = io.BytesIO()
+    merger.write(output)
+    output.seek(0)
+    
+    return send_file(output, mimetype='application/pdf')
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    # Configurazione specifica per Railway sulla porta 8080
+    app.run(host='0.0.0.0', port=8080)
