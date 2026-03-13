@@ -1,8 +1,7 @@
-from flask import Flask, request, send_file
+from flask import Flask, request, jsonify
 import img2pdf
 from PIL import Image
-import io
-import base64
+import io, base64, os
 
 app = Flask(__name__)
 
@@ -22,21 +21,12 @@ def convert():
     pdf_bytes = img2pdf.convert(image_bytes_list)
     pdf_b64 = base64.b64encode(pdf_bytes).decode('utf-8')
     
-    return {'pdf': pdf_b64, 'pages': len(image_bytes_list)}
+    return jsonify({'pdf': pdf_b64, 'pages': len(image_bytes_list)})
 
 @app.route('/health', methods=['GET'])
 def health():
-    return {'status': 'ok'}
+    return jsonify({'status': 'ok'})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
-```
-
----
-
-**`requirements.txt`**
-```
-flask
-img2pdf
-Pillow
-gunicorn
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
