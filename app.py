@@ -33,4 +33,22 @@ def merge():
     return jsonify({'pdf': pdf_b64, 'pages': writer.get_num_pages()})
 
 @app.route('/health', methods=['GET'])
-def
+def merge():
+    data = request.json
+    pdfs = data.get('pdfs', [])
+    writer = PdfWriter()
+    for pdf_b64 in pdfs:
+        pdf_bytes = base64.b64decode(pdf_b64)
+        writer.append(io.BytesIO(pdf_bytes))
+    output = io.BytesIO()
+    writer.write(output)
+    pdf_b64 = base64.b64encode(output.getvalue()).decode('utf-8')
+    return jsonify({'pdf': pdf_b64, 'pages': writer.get_num_pages()})
+
+@app.route('/health', methods=['GET'])
+def health():
+    return jsonify({'status': 'ok'})
+
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
