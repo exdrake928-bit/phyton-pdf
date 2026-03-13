@@ -5,6 +5,6 @@ RUN pip install flask img2pdf Pillow gunicorn
 WORKDIR /app
 COPY app.py .
 
-EXPOSE 5000
+EXPOSE $PORT
 
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:$PORT app:app"]
