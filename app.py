@@ -33,4 +33,4 @@ def merge():
     return jsonify({'pdf': pdf_b64, 'pages': writer.get_num_pages()})
 
 @app.route('/health', methods=['GET'])
-de
+def
