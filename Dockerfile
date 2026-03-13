@@ -1,9 +1,10 @@
 FROM nikolaik/python-nodejs:python3.11-nodejs20
 
-RUN pip install img2pdf Pillow
+RUN pip install flask img2pdf Pillow gunicorn
 
-RUN npm install -g n8n
+WORKDIR /app
+COPY app.py .
 
-EXPOSE 5678
+EXPOSE 5000
 
-CMD ["n8n", "start"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
