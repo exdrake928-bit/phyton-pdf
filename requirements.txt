@@ -1,5 +1,4 @@
 flask
 img2pdf
 Pillow
-pypdf
 gunicorn
