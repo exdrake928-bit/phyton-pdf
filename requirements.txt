@@ -2,3 +2,4 @@ flask
 img2pdf
 Pillow
 gunicorn
+pypdf
