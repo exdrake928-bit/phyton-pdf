@@ -5,4 +5,4 @@ RUN pip install flask img2pdf Pillow gunicorn pypdf
 WORKDIR /app
 COPY app.py .
 
-CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-8080} app:app"]
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-8080} --timeout 120 --workers 2 app:app"]
