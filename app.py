@@ -1,7 +1,9 @@
 from flask import Flask, request, jsonify
 import img2pdf
 from PIL import Image
-import io, base64, os
+import io
+import base64
+import os
 from pypdf import PdfWriter
 
 app = Flask(__name__)
@@ -20,19 +22,6 @@ def convert():
     return jsonify({'pdf': pdf_b64, 'pages': len(image_bytes_list)})
 
 @app.route('/merge', methods=['POST'])
-def merge():
-    data = request.json
-    pdfs = data.get('pdfs', [])
-    writer = PdfWriter()
-    for pdf_b64 in pdfs:
-        pdf_bytes = base64.b64decode(pdf_b64)
-        writer.append(io.BytesIO(pdf_bytes))
-    output = io.BytesIO()
-    writer.write(output)
-    pdf_b64 = base64.b64encode(output.getvalue()).decode('utf-8')
-    return jsonify({'pdf': pdf_b64, 'pages': writer.get_num_pages()})
-
-@app.route('/health', methods=['GET'])
 def merge():
     data = request.json
     pdfs = data.get('pdfs', [])
